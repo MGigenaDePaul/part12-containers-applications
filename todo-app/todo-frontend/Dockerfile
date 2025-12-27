@@ -1,12 +1,27 @@
+FROM node:20 AS test-stage
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+RUN npm test
+
 FROM node:20 AS build-stage
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY package*.json ./
 
 RUN npm ci
 
-ENV VITE_BACKEND_URL=http://localhost:3000
+COPY . .
+
+ARG VITE_BACKEND_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
 
 RUN npm run build
 
